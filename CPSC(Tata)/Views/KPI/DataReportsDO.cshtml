@@ -1,0 +1,245 @@
+﻿
+@{
+    ViewBag.Title = "Div_List_With_No_Data_actual";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/jquery3_1.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#divisionList').rowspanizer({ vertical_align: 'middle' });
+    });
+
+</script>
+@using System.Data;
+@using System.Data.SqlClient;
+@using System.Globalization;
+@using System.Web;
+@using DataUtilityLayer;
+@using System.Configuration;
+@{
+    SqlCommand cmdObj = new SqlCommand();
+    string uid2 = Session["Uid"].ToString();
+    string sheet = "Target";
+    string CS1 = ConfigurationManager.ConnectionStrings["constr"].ConnectionString;
+    DataTable dtf2;
+    string _sql2 = string.Empty;
+    _sql2 = @"getDataOkDataTarget";
+    using (SqlConnection cn = new SqlConnection(CS1))
+    {
+        DataTable dt = new DataTable();
+        //var cmd = new SqlCommand(_sql, cn);
+        var daCampus = new SqlDataAdapter(_sql2, cn);
+        daCampus.SelectCommand.CommandType = CommandType.StoredProcedure;
+        daCampus.SelectCommand.Parameters.AddWithValue("@FW", Session["Uid"].ToString());
+        daCampus.SelectCommand.Parameters.AddWithValue("@ForActual_Target", sheet);
+        daCampus.Fill(dt);
+        dtf2 = dt;
+    }
+
+}
+
+
+<div class="row">
+    <div class="col-md-12">
+
+        <div class="portlet light bordered" id="form_wizard_1">
+            <div class="portlet-title" style="min-height:30px; margin-bottom:0px;">
+                <div class="caption" style="padding:0px 0;">
+                    @*<i class="icon-layers font-blue"></i>*@
+                    <i class="glyphicon glyphicon-list-alt font-blue"></i>
+                    <span class="caption-subject font-blue bold uppercase">
+                        Data OK - Target
+                    </span>
+                </div>
+                <div class="btn-group pull-right" style="margin-top: -8px;">
+                    <button class="btn green btn-outline dropdown-toggle" data-toggle="dropdown">
+                        Tools
+                        <i class="fa fa-angle-down"></i>
+                    </button>
+                    <ul class="dropdown-menu pull-right">
+                        @*<li>
+                                <a id="Print"> Print </a>
+                            </li>*@
+                        <li>
+                            <a id="ExcelExport"> Export to Excel </a>
+                        </li>
+                        @*<li>
+                                <a id="Exporttopdf"> Export to Pdf </a>
+                            </li>*@
+                    </ul>
+                </div>
+
+                <!--<div class="btn-group pull-right" style="margin-top: -8px;">
+                    <button class="btn green btn-outline dropdown-toggle" data-toggle="dropdown">
+                        Tools
+                        <i class="fa fa-angle-down"></i>
+                    </button>
+                    <ul class="dropdown-menu pull-right">
+                        <li>
+                            <a id="Print"> Print </a>
+                        </li>
+                        <li>
+                            <a id="ExcelExport"> Export to Excel </a>
+                        </li>-->
+                @*<li>
+                        <a id="Exporttopdf"> Export to Pdf </a>
+                    </li>*@
+                <!--</ul>
+                </div>-->
+            </div>
+            <div class="portlet-body form" style="overflow:auto; max-height:425px;">
+
+
+                <div class="form-horizontal">
+                    <div class="form-wizard" style="width:99%;">
+                        <div class="form-body" style="padding:5px;">
+
+                            <div class="tab-pane active" id="tab1">
+                                <!--h3 class="block">Provide your account details</h3-->
+
+
+
+
+
+                                <table id="DOTarget" class="table table-striped table-bordered display" cellspacing="0" width="100%">
+                                    @*<table class="table table-bordered table-striped" id="divisionList">*@
+                                    <thead>
+                                        <tr style="background-color:#ccc;">
+                                            <th style="font-size:11px;">TASS</th>
+                                            <th style="font-size:11px;">Division</th>
+                                            @*<th style="font-size: 11px; display: none">LOB</th>*@
+                                            <th style="font-size:11px;">Parameter</th>
+                                            <th style="font-size:11px;">Last Month Target</th>
+                                            <th style="font-size:11px;">Last Month Actual</th>
+                                            <th style="font-size:11px;">Target(@DateTime.Parse(Session["Target_Date"].ToString()).ToString("MMM")'@DateTime.Parse(Session["Target_Date"].ToString()).ToString("yy"))</th>
+                                            <th style="font-size:11px;">Actual(@DateTime.Parse(Session["Target_Date"].ToString()).ToString("MMM")'@DateTime.Parse(Session["Target_Date"].ToString()).ToString("yy"))</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        @{
+                                            if (dtf2.Rows.Count > 0)
+                                            {
+                                                for (int i = 0; i < dtf2.Rows.Count; i++)
+                                                {
+                                                    <tr>
+                                                        <td style="font-size:11px;">@dtf2.Rows[i]["Tass_Name"].ToString() - @dtf2.Rows[i]["City"].ToString()</td>
+                                                        <td style="font-size:11px;">@dtf2.Rows[i]["Division_Id"].ToString()</td>
+                                                        @* <td style="font-size: 11px; display: none">@dtf2.Rows[i]["LOB"].ToString()</td>*@
+                                                        <td style="font-size:11px;">@dtf2.Rows[i]["KPI_NAME"].ToString()</td>
+                                                        @*<td style="font-size:11px;">@dtf2.Rows[i]["Actual_Value"].ToString()</td>
+                                                            <td style="font-size:11px;">@dtf2.Rows[i]["Target_Value"].ToString()</td>*@
+                                                        <td style="font-size:11px;">@dtf2.Rows[i]["Last_M_T"].ToString()</td>
+                                                        <td style="font-size:11px;">@dtf2.Rows[i]["Last_M_A"].ToString()</td>
+                                                        <td style="font-size:11px;">@dtf2.Rows[i]["Target_Value"].ToString()</td>
+                                                        <td style="font-size:11px;">@dtf2.Rows[i]["Actual_Value"].ToString()</td>
+
+                                                    </tr>
+
+                                                }
+                                            }
+                                        }
+
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" type="text/css" href="~/assets/apps/css/all.min.css" />
+
+
+<script>
+
+    $(document).ready(function () {
+
+
+
+        $("#DOTarget").dataTable({
+
+            "bPaginate": false
+        });
+
+
+    });
+
+
+    function printData()
+{
+        var divToPrint = document.getElementById("example");
+        divToPrint.style.borderCollapse = "collapse";
+
+
+        var th = document.getElementById("example").getElementsByTagName("th");
+
+        for (i = 0; i < th.length; i++) {
+            th[i].style.borderColor = "Black";
+            th[i].style.borderWidth = "1px";
+            th[i].style.borderStyle = "solid";
+           // alert(i);
+        }
+        //th[11].innerHTML = "";
+        var td = document.getElementById("example").getElementsByTagName("td");
+        for (k = 0; k < td.length; k++) {
+            td[k].style.borderColor = "Black";
+            td[k].style.borderWidth = "1px";
+            td[k].style.borderStyle = "solid";
+        }
+   newWin= window.open("");
+   newWin.document.write(divToPrint.outerHTML);
+   newWin.print();
+   newWin.close();
+   for (l = 0; l < th.length; l++) {
+       th[l].style.borderColor = "";
+       th[l].style.borderWidth = "";
+       th[l].style.borderStyle = "";
+   }
+   //th[11].innerHTML = "Action";
+   var td = document.getElementById("example").getElementsByTagName("td");
+   for (m = 0; m < td.length; m++) {
+       td[m].style.borderColor = "";
+       td[m].style.borderWidth = "";
+       td[m].style.borderStyle = "";
+   }
+}
+
+
+$('#Print').on('click',function(){
+printData();
+})
+$('#ExcelExport').on('click', function () {
+    var proc = '@_sql2';
+    var flag = 'Target';
+    var Uid = '@Session["Uid"].ToString()';
+    var filename = 'Report_OK_' + flag + '_' + Uid + '.xlsx';
+
+    var url_at = '@Url.Action("DTToExcel", "Home")';
+    var url_com_at = url_at + '?Proc=' + proc + '&flag=' + flag + '&filename=' + filename;
+    //alert(url_com_at);
+    var jsonComp_at = $.getJSON(url_com_at, function (result) {
+
+        if (result == true) {
+
+            var uri_file = '@Url.Action("Download", "Home")';
+            var uri_file_at = uri_file + '?file=' + filename;
+            window.location.href = uri_file_at;
+        }
+        else {
+
+
+        }
+
+    });
+
+    return (true);
+
+
+})
+</script>
+

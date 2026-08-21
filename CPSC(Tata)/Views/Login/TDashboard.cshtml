@@ -1,0 +1,78 @@
+﻿@*@model InputOutput.Models.Users*@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    string ticket = Session["ticket"].ToString();
+    string dashtype = Session["dashtype"].ToString();
+    string UserId = Session["Uid"].ToString();
+    string newURL1 = "https://infoviz.cv.tatamotors/trusted/" + ticket + "/t/CPSCTMLSite/views/TMLTASSScorecards/TASSAggregatedScorecard?iframeSizedToWindow=true&:embed=y&:toolbar=n&:showAppBanner=false&:display_count=no&:showVizHome=no#4";
+    string newURL2 = "https://infoviz.cv.tatamotors/trusted/" + ticket + "/t/CPSCTMLSite/views/Nishant/TASSAggregatedScorecard?iframeSizedToWindow=true&:embed=y&:toolbar=n&:showAppBanner=false&:display_count=no&:showVizHome=no#4";
+    string newURL3 = "https://infoviz.cv.tatamotors/trusted/" + ticket + "/t/CPSCTMLSite/views/Tass_usersDealer/TASSDashboard?iframeSizedToWindow=true&:embed=y&:toolbar=n&:showAppBanner=true&:display_count=no&:showVizHome=no#4";
+    string newURL4 = "https://infoviz.cv.tatamotors/trusted/" + ticket + "/t/CPSCTMLSite/views/TMLTASSScorecards_FY22-23/TASSAggregatedScorecard?iframeSizedToWindow=true&:embed=y&:toolbar=n&:showAppBanner=true&:display_count=no&:showVizHome=no#4";
+}
+
+<div id="row" style="height:100vh; max-height: 100%;">
+
+    @if (dashtype == "NetworkDashboard")
+    {
+        @*<script type='module' src='https://infoviz.cv.tatamotors/javascripts/api/tableau.embedding.3.latest.min.js'></script>*@
+        @*<tableau-viz id='tableau-viz' src='https://infoviz.cv.tatamotors/t/CPSCTMLSite/views/TASSRegionalNetworkData-16_4_24/PANINDIATASSNETWORKDASHBOARD'
+            token="@ticket" toolbar='bottom'></tableau-viz>*@
+        <tableau-viz id='tableau-viz' src='https://infoviz.cv.tatamotors/t/CPSCTMLSite/views/TASSRegionalNetworkData-16_4_24/PANINDIATASSNETWORKDASHBOARD_1'
+                     token="@ticket" toolbar='bottom'></tableau-viz>
+    }
+    else if (dashtype == "TASSCPSCReport")
+    {
+        @*<script type='module' src='https://infoviz.cv.tatamotors/javascripts/api/tableau.embedding.3.latest.min.js'></script>*@
+        <tableau-viz id='tableau-viz' src='https://infoviz.cv.tatamotors/t/CPSCTMLSite/views/TMLTASS3_0ScorecardsFY25-26Report/Firstpage'
+                     token="@ticket" toolbar='bottom'></tableau-viz>
+    }
+    else if (dashtype == "TML2531")
+    {
+        @*<script type='module' src='https://infoviz.cv.tatamotors/javascripts/api/tableau.embedding.3.latest.min.js'></script>*@
+        <tableau-viz id='tableau-viz' src='https://infoviz.cv.tatamotors/t/CPSCTMLSite/views/TMLTASS3_1ScorecardsFY25-26/TASSAggregatedScorecard'
+                     token="@ticket" toolbar='bottom'></tableau-viz>
+    }
+    else if (dashtype == "TML2430")
+    {
+        @*<script type='module' src='https://infoviz.cv.tatamotors/javascripts/api/tableau.embedding.3.latest.min.js'></script>*@
+        <tableau-viz id='tableau-viz' src='https://infoviz.cv.tatamotors/t/CPSCTMLSite/views/TMLTASS3_0ScorecardsFY24-25/TASSAggregatedScorecard'
+                     token="@ticket" toolbar='bottom'></tableau-viz>
+    }
+    else if (dashtype == "TML24")
+    {
+        @*<script type='module' src='https://infoviz.cv.tatamotors/javascripts/api/tableau.embedding.3.latest.min.js'></script>*@
+        <tableau-viz id='tableau-viz' src='https://infoviz.cv.tatamotors/t/CPSCTMLSite/views/TMLTASSScorecardsFY24-25/TASSAggregatedScorecard'
+                     token="@ticket" toolbar='bottom'></tableau-viz>
+    }
+    else if (dashtype == "TML23")
+    {
+        @*<script type='module' src='https://infoviz.cv.tatamotors/javascripts/api/tableau.embedding.3.latest.min.js'></script>*@
+        <tableau-viz id='tableau-viz' src='https://infoviz.cv.tatamotors/t/CPSCTMLSite/views/TMLTASSScorecards/TASSAggregatedScorecard'
+                     token="@ticket" toolbar='bottom'></tableau-viz>
+    }
+    else if (dashtype == "TML22")
+    {
+        @*<script type='module' src='https://infoviz.cv.tatamotors/javascripts/api/tableau.embedding.3.latest.min.js'></script>*@
+        <tableau-viz id='tableau-viz' src='https://infoviz.cv.tatamotors/t/CPSCTMLSite/views/TMLTASSScorecards_FY22-23/TASSAggregatedScorecard'
+                     token="@ticket" toolbar='bottom'></tableau-viz>
+    }
+    else if (dashtype == "SuperAdmin")
+    {
+        @*<script type='module' src='https://infoviz.cv.tatamotors/javascripts/api/tableau.embedding.3.latest.min.js'></script>*@
+        <tableau-viz id='tableau-viz' src='https://infoviz.cv.tatamotors/t/CPSCTMLSite/views/Nishant/TASSAggregatedScorecard'
+                     token="@ticket" toolbar='bottom'></tableau-viz>
+    }
+    else
+    {
+        @*<script type='module' src='https://infoviz.cv.tatamotors/javascripts/api/tableau.embedding.3.latest.min.js'></script>*@
+        <tableau-viz id='tableau-viz' src='https://infoviz.cv.tatamotors/t/CPSCTMLSite/views/Tass_usersDealer/TASSDashboard'
+                     token="@ticket" toolbar='bottom'></tableau-viz>
+    }
+
+
+</div>
+
+
+
+

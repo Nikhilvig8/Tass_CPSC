@@ -1,0 +1,22 @@
+## Visual Studio / .NET build artifacts
+bin/
+obj/
+[Bb]in/
+[Oo]bj/
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## NuGet packages (restored via packages.config)
+packages/
+*.nupkg
+
+## Logs
+Logs/
+*.log
+
+## OS files
+Thumbs.db
+.DS_Store

@@ -1,0 +1,85 @@
+﻿@*@model InputOutput.Models.Users*@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    string ticket = Session["ticket"].ToString();
+    string dashtype = Session["dashtype"].ToString();
+    string UserId = Session["Uid"].ToString();
+    string newURL1 = "https://infoviz.cv.tatamotors/trusted/" + ticket + "/t/CPSCTMLSite/views/TMLTASSScorecards/TASSAggregatedScorecard?iframeSizedToWindow=true&:embed=y&:showAppBanner=false&:display_count=no&:showVizHome=no#4";
+    string newURL2 = "https://infoviz.cv.tatamotors/trusted/" + ticket + "/t/CPSCTMLSite/views/Nishant/TASSAggregatedScorecard?iframeSizedToWindow=true&:embed=y&:showAppBanner=false&:display_count=no&:showVizHome=no#4";
+    string newURL3 = "https://infoviz.cv.tatamotors/trusted/" + ticket + "/t/CPSCTMLSite/views/Tass_usersDealer/TASSDashboard?iframeSizedToWindow=true&:embed=y&:showAppBanner=false&:display_count=no&:showVizHome=no#4";
+    string newURL4 = "https://infoviz.cv.tatamotors/trusted/" + ticket + "/t/CPSCTMLSite/views/TMLTASSScorecards_FY22-23/TASSAggregatedScorecard?iframeSizedToWindow=true&:embed=y&:toolbar=n&:showAppBanner=true&:display_count=no&:showVizHome=no#4";
+
+    //string newURL1 = "https://infoviz.cv.tatamotors/trusted/" + ticket + "/t/CPSCTMLSite/views/TMLTASSScorecards/TASSAggregatedScorecard?iframeSizedToWindow=true&:embed=y&:toolbar=n&:showAppBanner=false&:display_count=no&:showVizHome=no#4";
+    //string newURL2 = "https://infoviz.cv.tatamotors/trusted/" + ticket + "/t/CPSCTMLSite/views/Nishant/TASSAggregatedScorecard?iframeSizedToWindow=true&:embed=y&:toolbar=n&:showAppBanner=false&:display_count=no&:showVizHome=no#4";
+    //string newURL3 = "https://infoviz.cv.tatamotors/trusted/" + ticket + "/t/CPSCTMLSite/views/Tass_usersDealer/TASSDashboard?iframeSizedToWindow=true&:embed=y&:toolbar=n&:showAppBanner=false&:display_count=no&:showVizHome=no#4";
+
+}
+
+<div id="row" style="height:100vh; max-height: 100%">
+    @*@using (Html.BeginForm("BulkDataSheet", "KPI", FormMethod.Post))
+        {
+        <div class="col-md-12" style="min-height:535px; max-height:535px;">*@
+    @*var ticket = '@ticket';
+        var dashtype = '@dashtype';
+        var newURL = "";*@
+    @if (dashtype == "TML23")
+    {
+        <iframe src="@newURL1" name="iframe_a" id="iframe_a" height="100%" width="100%">
+        </iframe>
+    }
+    else if (dashtype == "TML22")
+    {
+        <iframe src="@newURL4" name="iframe_a" id="iframe_a" height="100%" width="100%">
+        </iframe>
+    }
+    else if (dashtype == "SuperAdmin")
+    {
+        <iframe src="@newURL2" name="iframe_a" id="iframe_a" height="100%" width="100%">
+        </iframe>
+    }
+    else
+    {
+        <iframe src="@newURL3" name="iframe_a" id="iframe_a" height="100%" width="100%">
+        </iframe>
+    }
+
+    @*</div>
+        }*@
+</div>
+@*<script type="text/javascript">
+    (function()
+    {
+
+
+        var ticket = '@ticket';
+        var dashtype = '@dashtype';
+        var newURL = "";
+       // alert('@dashtype')
+        if (dashtype == 'User')
+        {
+         //newURL = "https://infoviz.cv.tatamotors/trusted/" + ticket + "/t/CPSCTMLSite/views/TMLTASSScorecards/TASSAggregatedScorecard?iframeSizedToWindow=true&:embed=y&:showAppBanner=false&:display_count=no&:showVizHome=no#4";
+            newURL = "https://infoviz.cv.tatamotors/trusted/" + ticket + "/t/CPSCTMLSite/views/TMLTASSScorecards/TASSAggregatedScorecard?iframeSizedToWindow=true&:embed=y&:showAppBanner=false&:display_count=no&:showVizHome=no#4";
+
+            window.open(newURL, '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
+        }
+
+        else if (dashtype == 'SuperAdmin')
+        {
+            newURL = "https://infoviz.cv.tatamotors/trusted/" + ticket + "/t/CPSCTMLSite/views/Nishant/TASSAggregatedScorecard?iframeSizedToWindow=true&:embed=y&:showAppBanner=false&:display_count=no&:showVizHome=no#4";
+            window.open(newURL, '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
+        }
+        else
+        {
+         //newURL = "https://infoviz.cv.tatamotors/trusted/" + ticket + "/t/CPSCTMLSite/views/Tass_usersDealer/TASSDAshboard?iframeSizedToWindow=true&:embed=y&:showAppBanner=false&:display_count=no&:showVizHome=no#4";
+          //  newURL = "https://infoviz.cv.tatamotors/trusted/" + ticket + "/t/CPSCTMLSite/views/Tass_usersDealer/TASSDAshboard?iframeSizedToWindow=true&:embed=y&:showAppBanner=false&:display_count=no&:showVizHome=no#4";
+           // newURL = "https://infoviz.cv.tatamotors/trusted/" + ticket + "/t/CPSCTMLSite/views/Tass_usersDealer/TASSDashboard?iframeSizedToWindow=true&:embed=y&:showAppBanner=false&:display_count=no&:showVizHome=no#4";
+          //  newURL = "https://infoviz.cv.tatamotors/trusted/" + ticket + "/t/CPSCTMLSite/views/Tass_usersDealer/TASSDashboard?iframeSizedToWindow=true&:embed=y&:showAppBanner=false&:display_count=no&:showVizHome=no#4";
+            newURL = "https://infoviz.cv.tatamotors/trusted/" + ticket + "/t/CPSCTMLSite/views/Tass_usersDealer/TASSDashboard?iframeSizedToWindow=true&:embed=y&:showAppBanner=false&:display_count=no&:showVizHome=no#4";
+            window.open(newURL, '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
+        }
+    })();
+</script>*@
+
+
+
