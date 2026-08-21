@@ -62,7 +62,12 @@
 
 
 
-    DateTime actual_date = Convert.ToDateTime(Session["Actual_date"].ToString());
+    // Session["Actual_Date"] (capital D) is what login actually sets (see Users.cs /
+    // LoginController.CompleteLogin) - falling back to DateTime.Now avoids a NullReferenceException
+    // if it's ever missing (e.g. a session that predates this field, or an unusual login path).
+    DateTime actual_date = Session["Actual_Date"] != null
+        ? Convert.ToDateTime(Session["Actual_Date"].ToString())
+        : DateTime.Now;
 
     String month_curr_name = actual_date.AddMonths(0).ToString("MMM");/*DateTime.Now.ToString("MMM");*/
     String month_last_name = actual_date.AddMonths(0).ToString("MMM");
@@ -218,7 +223,10 @@
     string _sqltar = string.Empty;
     string CS_laytar = ConfigurationManager.ConnectionStrings["constr"].ConnectionString;
 
-    DateTime target_date = Convert.ToDateTime(Session["Target_date"].ToString());
+    // Same casing mismatch as Actual_Date above - login sets "Target_Date" (capital D).
+    DateTime target_date = Session["Target_Date"] != null
+        ? Convert.ToDateTime(Session["Target_Date"].ToString())
+        : DateTime.Now;
 
     String month_curr_name_target = target_date.AddMonths(0).ToString("MMM");/*DateTime.Now.ToString("MMM");*/
     String month_last_name_target = target_date.AddMonths(0).ToString("MMM");

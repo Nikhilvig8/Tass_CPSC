@@ -236,9 +236,15 @@ namespace InputOutput.Controllers
             string type = Session["Type"] as string ?? string.Empty;
             string uid = Session["Uid"] as string ?? string.Empty;
             string displayUserName = Session["UserName"] as string ?? string.Empty;
+            // IsValid/IsValidOID1 also set these as a side effect of the DB lookup - Session.Abandon()
+            // below would silently drop them (same as Type/Uid/UserName) if not carried across the
+            // rotation too. Many views (Home/Index, KPI reports, BulkUpload, ActionPlan, ...) read
+            // these expecting the current reporting-period date, not just "today".
+            string actualDate = Session["Actual_Date"] as string ?? string.Empty;
+            string targetDate = Session["Target_Date"] as string ?? string.Empty;
 
             string payload = string.Join(PendingLoginFieldSeparator.ToString(),
-                type, uid, displayUserName, rememberMe ? "1" : "0");
+                type, uid, displayUserName, rememberMe ? "1" : "0", actualDate, targetDate);
 
             // Reuses FormsAuthentication's own ticket encryption/signing (protection="All" in
             // Web.config) rather than a hand-rolled format, giving this short-lived cookie the same
@@ -302,11 +308,15 @@ namespace InputOutput.Controllers
             string uid = fields.Length > 1 ? fields[1] : string.Empty;
             string displayUserName = fields.Length > 2 ? fields[2] : string.Empty;
             bool rememberMe = fields.Length > 3 && fields[3] == "1";
+            string actualDate = fields.Length > 4 ? fields[4] : string.Empty;
+            string targetDate = fields.Length > 5 ? fields[5] : string.Empty;
             string username = ticket.Name;
 
             Session["Type"] = type;
             Session["Uid"] = uid;
             Session["UserName"] = displayUserName;
+            if (!string.IsNullOrEmpty(actualDate)) Session["Actual_Date"] = actualDate;
+            if (!string.IsNullOrEmpty(targetDate)) Session["Target_Date"] = targetDate;
 
             return MfaGateResult(username, rememberMe);
         }
