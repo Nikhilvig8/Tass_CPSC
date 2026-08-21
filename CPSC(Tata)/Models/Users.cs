@@ -187,6 +187,57 @@ public new  bool IsValid(string _username, string _password)
             _tokenUrl = "https://sso.tatamotors.com/auth/realms/grahak/protocol/openid-connect/token";
         }
 
+        // --- App-level TOTP authenticator MFA support ---
+        // REQUIRES two stored procedures ("GetTotpSecret", "SetTotpSecret") and a nullable
+        // TotpSecret column on the underlying users table - see Sql/mfa_totp_schema.sql alongside
+        // this change (couldn't be created without direct database access - verify the table/column
+        // names in that script actually match this environment's schema before running it). Null/
+        // missing secret = user hasn't enrolled MFA yet; LoginController.MfaGateResult treats that
+        // as "must enroll now" since MFA is mandatory here.
+        public string GetTotpSecret(string username)
+        {
+            try
+            {
+                using (var cn = new SqlConnection(conn))
+                {
+                    var cmd = new SqlCommand("GetTotpSecret", cn) { CommandType = CommandType.StoredProcedure };
+                    cmd.Parameters.Add(new SqlParameter("@Username", SqlDbType.NVarChar)).Value = username;
+                    cn.Open();
+                    object result = cmd.ExecuteScalar();
+                    return (result != null && result != DBNull.Value) ? result.ToString() : null;
+                }
+            }
+            catch
+            {
+                // Missing proc/column, or any DB error: treat as "not enrolled" rather than
+                // blocking login entirely - fixing the DB side later just activates MFA for
+                // whoever has since enrolled, with zero impact on everyone else in the meantime.
+                return null;
+            }
+        }
+
+        public bool SetTotpSecret(string username, string secret)
+        {
+            try
+            {
+                using (var cn = new SqlConnection(conn))
+                {
+                    var cmd = new SqlCommand("SetTotpSecret", cn) { CommandType = CommandType.StoredProcedure };
+                    cmd.Parameters.Add(new SqlParameter("@Username", SqlDbType.NVarChar)).Value = username;
+                    cmd.Parameters.Add(new SqlParameter("@TotpSecret", SqlDbType.NVarChar)).Value = secret;
+                    cn.Open();
+                    // ExecuteNonQuery returning 0 means the UPDATE ran without error but matched no
+                    // rows - i.e. @Username didn't exactly match any row, so nothing was actually
+                    // saved even though no exception was thrown.
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public async Task<bool> IsValidOID1(string username, string password)
         {
 

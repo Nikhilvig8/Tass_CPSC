@@ -8,8 +8,13 @@ namespace InputOutput
         // For more information on bundling, visit http://go.microsoft.com/fwlink/?LinkId=301862
         public static void RegisterBundles(BundleCollection bundles)
         {
+            // VAPT "Vulnerable and Outdated Components": jQuery 1.10.2 (2013) carries unpatched
+            // XSS CVEs never backported to the 1.x line. jQuery Migrate loads right after and
+            // shims most APIs removed between 1.x and 3.x, logging a console warning instead of a
+            // hard failure for anything it can't fully polyfill.
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
-                        "~/Scripts/jquery-{version}.js"));
+                        "~/Scripts/jquery-{version}.js",
+                        "~/Scripts/jquery-migrate-{version}.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
                         "~/Scripts/jquery.validate*"));
