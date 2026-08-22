@@ -80,9 +80,22 @@ namespace InputOutput
             // should add a Content-Security-Policy entry to Web.config.
             //
             // script-src: 'unsafe-inline' is gone, replaced by the nonce - only <script> tags this
-            // app actually rendered (carrying nonce="@CspNonce.Current") can execute. 'unsafe-eval'
-            // stays for now - ~30 files (mostly bundled theme plugins) call eval()/new Function();
-            // auditing and replacing each call site is separate, larger follow-up work.
+            // app actually rendered (carrying nonce="@CspNonce.Current") can execute.
+            //
+            // 'unsafe-eval' is also gone. Audited every eval()/new Function() call site actually
+            // reachable by this app (most of the ~30 files matching "eval(" turned out to be dead
+            // theme-bundle files never loaded by any view, or false-positive matches like Angular's
+            // $eval() scope method, not the real eval() global):
+            //  - Scripts/pdf.js (55 views): one real `new Function()` call, in FontFaceObject's glyph
+            //    compiler, already gated behind `this.options.isEvalSupported && IsEvalSupportedCached.value`
+            //    - the library's own author-provided CSP-safe fallback path. Nothing to change here.
+            //  - AngularJS + ui-select (35 views load the scripts): real `new Function()` calls exist
+            //    in Angular's $parse service, but Angular is never bootstrapped anywhere in this app -
+            //    no ng-app, no angular.bootstrap(), and zero ng-* directives or {{ }} interpolation in
+            //    any view (confirmed via full-codebase search). The scripts load but nothing on any
+            //    page ever invokes Angular, so this code path never executes regardless of CSP.
+            //  - Every other file matching "eval(" (bootstrap-markdown, morris examples, wysihtml5,
+            //    jquery-gantt, codemirror, jquery-1.10.2.js, etc.) is not loaded by any view at all.
             //
             // script-src-attr: kept at 'unsafe-inline' deliberately. Nonces only cover <script>
             // elements, never inline event-handler attributes (onclick=, onchange=, etc.) - CSP
@@ -91,7 +104,7 @@ namespace InputOutput
             // not silently broken by this change.
             string nonce = CspNonce.Current;
             string csp = "default-src 'self'; "
-                + "script-src 'self' 'nonce-" + nonce + "' 'unsafe-eval' https://code.jquery.com https://ajax.googleapis.com https://cdn.datatables.net https://infoviz.cv.tatamotors https://infoviz.tatamotors.com; "
+                + "script-src 'self' 'nonce-" + nonce + "' https://code.jquery.com https://ajax.googleapis.com https://cdn.datatables.net https://infoviz.cv.tatamotors https://infoviz.tatamotors.com; "
                 + "script-src-attr 'unsafe-inline'; "
                 + "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.datatables.net; "
                 + "font-src 'self' data: https://fonts.gstatic.com; "
