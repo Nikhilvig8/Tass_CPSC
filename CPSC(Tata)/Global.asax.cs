@@ -21,6 +21,30 @@ namespace InputOutput
             BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
 
+        // VAPT "Password in plain text" (rescan): the site had no HTTP->HTTPS redirect after the
+        // IIS <rewrite> block was removed (this server has no URL Rewrite module installed - see
+        // Web.config history), so a request could still reach the login form over plain HTTP and
+        // submit credentials unencrypted. Done at the application level instead - no IIS module
+        // required. Checks X-Forwarded-Proto first (the standard header a reverse proxy/CDN sets to
+        // the scheme the client actually used; Request.IsSecureConnection would read false for
+        // every request if TLS is terminated upstream, causing a redirect loop) and falls back to
+        // Request.IsSecureConnection when that header isn't present, i.e. this app is hit directly.
+        protected void Application_BeginRequest()
+        {
+            if (Request.IsSecureConnection) return;
+
+            string forwardedProto = Request.Headers["X-Forwarded-Proto"];
+            if (!string.IsNullOrEmpty(forwardedProto))
+            {
+                if (string.Equals(forwardedProto, "https", StringComparison.OrdinalIgnoreCase)) return;
+            }
+
+            string httpsUrl = "https://" + Request.Url.Host + Request.RawUrl;
+            Response.Status = "301 Moved Permanently";
+            Response.RedirectLocation = httpsUrl;
+            Response.End();
+        }
+
         // VAPT "Secure Cookies not set properly": Web.config's <httpCookies httpOnlyCookies="true"
         // requireSSL="true" /> covers HttpOnly + Secure for every cookie this app sets. SameSite
         // can't be expressed via that config element on .NET Framework 4.8, so it's appended to
