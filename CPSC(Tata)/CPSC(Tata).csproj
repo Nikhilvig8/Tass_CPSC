@@ -226,6 +226,14 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\ActionPlanModel.cs" />
+    <!-- Deliberately NOT under App_Code: ASP.NET's runtime BuildManager auto-compiles anything
+         physically in a folder literally named "App_Code" into its own separate dynamic assembly,
+         regardless of it already being compiled into InputOutput.dll via this explicit Compile
+         entry - since this type is referenced directly from ~95 Razor views (nonce="@CspNonce.Current"),
+         that would produce "type exists in both App_Code.xxx and InputOutput" (CS0433) once deployed.
+         Confirmed via /p:MvcBuildViews=true, which reproduces the same dynamic-compilation behavior
+         AspNetCompiler/BuildManager use at runtime. -->
+    <Compile Include="Models\CspNonce.cs" />
     <Compile Include="Models\Transaction.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>

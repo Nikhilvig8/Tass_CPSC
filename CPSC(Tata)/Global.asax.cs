@@ -45,6 +45,15 @@ namespace InputOutput
             Response.End();
         }
 
+        // VAPT "Missing HTTP Security Headers" (rescan): removes 'unsafe-inline' from script-src.
+        // One fresh nonce per request - every inline <script> tag across the app carries this same
+        // value (see CspNonce.cs), so only scripts this app actually rendered can run; an injected
+        // <script> from an XSS payload won't have the current nonce and is blocked.
+        protected void Application_AcquireRequestState()
+        {
+            CspNonce.Generate();
+        }
+
         // VAPT "Secure Cookies not set properly": Web.config's <httpCookies httpOnlyCookies="true"
         // requireSSL="true" /> covers HttpOnly + Secure for every cookie this app sets. SameSite
         // can't be expressed via that config element on .NET Framework 4.8, so it's appended to
@@ -63,6 +72,35 @@ namespace InputOutput
                     cookie.Path += "; SameSite=Lax";
                 }
             }
+
+            // VAPT "Missing HTTP Security Headers" (rescan): built here instead of as a static
+            // Web.config <customHeaders> entry because it needs this request's nonce (see
+            // CspNonce.cs). Two browsers can't safely receive two different CSP headers on the same
+            // response, so this is now the single source of truth for this header - nothing else
+            // should add a Content-Security-Policy entry to Web.config.
+            //
+            // script-src: 'unsafe-inline' is gone, replaced by the nonce - only <script> tags this
+            // app actually rendered (carrying nonce="@CspNonce.Current") can execute. 'unsafe-eval'
+            // stays for now - ~30 files (mostly bundled theme plugins) call eval()/new Function();
+            // auditing and replacing each call site is separate, larger follow-up work.
+            //
+            // script-src-attr: kept at 'unsafe-inline' deliberately. Nonces only cover <script>
+            // elements, never inline event-handler attributes (onclick=, onchange=, etc.) - CSP
+            // Level 3 lets those be governed independently via this sub-directive. ~18 views still
+            // use inline handlers; rewriting them to addEventListener is separate follow-up work,
+            // not silently broken by this change.
+            string nonce = CspNonce.Current;
+            string csp = "default-src 'self'; "
+                + "script-src 'self' 'nonce-" + nonce + "' 'unsafe-eval' https://code.jquery.com https://ajax.googleapis.com https://cdn.datatables.net https://infoviz.cv.tatamotors https://infoviz.tatamotors.com; "
+                + "script-src-attr 'unsafe-inline'; "
+                + "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.datatables.net; "
+                + "font-src 'self' data: https://fonts.gstatic.com; "
+                + "img-src 'self' data: https://*.gstatic.com; "
+                + "connect-src 'self' https://infoviz.cv.tatamotors https://infoviz.tatamotors.com; "
+                + "frame-src 'self' https://infoviz.cv.tatamotors https://infoviz.tatamotors.com; "
+                + "frame-ancestors 'self'; object-src 'none';";
+            response.Headers.Remove("Content-Security-Policy");
+            response.Headers.Add("Content-Security-Policy", csp);
         }
 
         // Global catch-all: fires for the original unhandled exception before customErrors' redirect,

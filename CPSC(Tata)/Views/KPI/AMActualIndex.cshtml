@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@*<script type="text/javascript">
+@*<script type="text/javascript" nonce="@CspNonce.Current">
 
     function SelectedIndexChanged()
     {
@@ -13,7 +13,7 @@
     }
 </script>*@
 <script src="~/Scripts/jquery3_1.js"></script>
-<script type="text/javascript">
+<script type="text/javascript" nonce="@CspNonce.Current">
 $(document).ready(function()//When the dom is ready
 {
     var month_as = $("#Month").val();
@@ -407,7 +407,7 @@ $(document).ready(function()//When the dom is ready
                                             @*<label class="control-label col-md-2" style="font-weight:bold;">&nbsp;</label>*@
                                         </div>
                                         @*<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-                                        <script>
+                                        <script nonce="@CspNonce.Current">
                                             $(document).ready(function () {
                                                 $("#tooltip1").hide();
                                                 $("#target1").focus(function () {

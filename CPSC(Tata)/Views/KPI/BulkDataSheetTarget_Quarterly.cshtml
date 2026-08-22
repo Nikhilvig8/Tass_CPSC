@@ -42,7 +42,7 @@
 
 
 <script src="~/Scripts/jquery3_1.js"></script>
-<script type="text/javascript">
+<script type="text/javascript" nonce="@CspNonce.Current">
     $(document).ready(function ()//When the dom is ready
     {
         //alert('hello');
@@ -416,7 +416,7 @@
 
     });
 </script>
-<script>
+<script nonce="@CspNonce.Current">
 
     function hygienelist(dealer, division, lob, input_id_hy, kpi_id_hy)
     {
@@ -1140,7 +1140,7 @@
                                 }
 </div>
 
-<script>
+<script nonce="@CspNonce.Current">
     function onhygienelistclose(input_id_hy,month_hy,year_hy,dealer_hy,division_hy,lob_hy,kpi_hy) {
         var AllSelectCount = 0; //$(".Select_Value").length;
         var YesSelectCount = 0;
@@ -1339,7 +1339,7 @@
 
 </script>
 
-@*<script>
+@*<script nonce="@CspNonce.Current">
         function onhygienelistclose() {
             var AllSelectCount = 0; //$(".Select_Value").length;
             var YesSelectCount = 0;
