@@ -34,16 +34,17 @@ namespace InputOutput
             if (Request.IsSecureConnection) return;
 
             // Local dev/debugging (IIS Express on localhost, e.g. F5 in Visual Studio) has no HTTPS
-            // listener on the same port - redirecting there would just be a dead end. This check
-            // never affects production traffic, which arrives through Cloudflare and is never local.
+            // listener on the same port - redirecting there would just be a dead end
+            // (ERR_SSL_PROTOCOL_ERROR, confirmed via DevTools showing a 301 to
+            // https://localhost:1311/... with nothing speaking TLS there).
             //
-            // Request.IsLocal alone isn't reliable here - it compares Request.UserHostAddress against
-            // Request.ServerVariables["LOCAL_ADDR"], which can mismatch on a dual-stack machine (e.g.
-            // the request arrives as IPv6 "::1" while LOCAL_ADDR reports "127.0.0.1"), silently
-            // returning false for a genuine loopback request. Uri.IsLoopback is checked too - it
-            // parses the host in the URL itself ("localhost", "127.0.0.1", "::1") and doesn't depend
-            // on that server-variable comparison at all.
-            if (Request.IsLocal || Request.Url.IsLoopback) return;
+            // Both Request.IsLocal and Request.Url.IsLoopback were tried first and neither reliably
+            // detected this as local in this environment (confirmed empirically - the redirect still
+            // fired). Checking the port instead sidesteps hostname/loopback detection entirely: real
+            // production traffic always arrives through Cloudflare on the standard HTTP port 80 (the
+            // X-Forwarded-Proto check above already handles the case where TLS terminated upstream) -
+            // there's no legitimate reason to redirect a request on any other port.
+            if (Request.Url.Port != 80) return;
 
             string forwardedProto = Request.Headers["X-Forwarded-Proto"];
             if (!string.IsNullOrEmpty(forwardedProto))
