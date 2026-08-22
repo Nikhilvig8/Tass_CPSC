@@ -35,9 +35,15 @@ namespace InputOutput
 
             // Local dev/debugging (IIS Express on localhost, e.g. F5 in Visual Studio) has no HTTPS
             // listener on the same port - redirecting there would just be a dead end. This check
-            // never affects production traffic, which arrives through Cloudflare and is never
-            // IsLocal.
-            if (Request.IsLocal) return;
+            // never affects production traffic, which arrives through Cloudflare and is never local.
+            //
+            // Request.IsLocal alone isn't reliable here - it compares Request.UserHostAddress against
+            // Request.ServerVariables["LOCAL_ADDR"], which can mismatch on a dual-stack machine (e.g.
+            // the request arrives as IPv6 "::1" while LOCAL_ADDR reports "127.0.0.1"), silently
+            // returning false for a genuine loopback request. Uri.IsLoopback is checked too - it
+            // parses the host in the URL itself ("localhost", "127.0.0.1", "::1") and doesn't depend
+            // on that server-variable comparison at all.
+            if (Request.IsLocal || Request.Url.IsLoopback) return;
 
             string forwardedProto = Request.Headers["X-Forwarded-Proto"];
             if (!string.IsNullOrEmpty(forwardedProto))
@@ -45,7 +51,16 @@ namespace InputOutput
                 if (string.Equals(forwardedProto, "https", StringComparison.OrdinalIgnoreCase)) return;
             }
 
-            string httpsUrl = "https://" + Request.Url.Host + Request.RawUrl;
+            // Request.Url.Host is the hostname ONLY - it never includes the port (that's the separate
+            // Request.Url.Port property). Appending it bare works for production (standard port 443,
+            // implicit) but would silently drop any non-standard port for anything else hitting this
+            // path. Preserve it explicitly whenever it isn't the plain-HTTP default (80).
+            string host = Request.Url.Host;
+            if (Request.Url.Port != 80 && Request.Url.Port != -1)
+            {
+                host += ":" + Request.Url.Port;
+            }
+            string httpsUrl = "https://" + host + Request.RawUrl;
             Response.Status = "301 Moved Permanently";
             Response.RedirectLocation = httpsUrl;
             Response.End();
