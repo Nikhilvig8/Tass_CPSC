@@ -114,7 +114,7 @@
                                                     if (dtf2.Rows[i]["Last_M_A"].ToString() == "") { value_tar_A = "NULL"; } else if (dtf2.Rows[i]["Last_M_A"].ToString() == "hidden") { hide_act_A = "display:none;"; } else { value_tar_A = dtf2.Rows[i]["Last_M_A"].ToString(); }
                                                 }
                                             <script src="~/Scripts/jquery3_1.js"></script>
-                                            <script nonce="@CspNonce.Current">
+                                            <script>
                                                 $(document).ready(function () {
                                                     var row_no1 = '@(i)';
                                                     var lastRowNo1 = row_no1;

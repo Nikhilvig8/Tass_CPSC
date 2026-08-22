@@ -55,15 +55,15 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.5.2\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.5.2\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="FastMember.Signed, Version=1.5.0.0, Culture=neutral, PublicKeyToken=9e8f22703bef9a29, processorArchitecture=MSIL">
-      <HintPath>..\packages\FastMember.Signed.1.5.0\lib\net461\FastMember.Signed.dll</HintPath>
+    <Reference Include="FastMember.Signed, Version=1.0.0.9, Culture=neutral, PublicKeyToken=9e8f22703bef9a29, processorArchitecture=MSIL">
+      <HintPath>..\packages\FastMember.Signed.1.1.0\lib\net40\FastMember.Signed.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -226,14 +226,6 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\ActionPlanModel.cs" />
-    <!-- Deliberately NOT under App_Code: ASP.NET's runtime BuildManager auto-compiles anything
-         physically in a folder literally named "App_Code" into its own separate dynamic assembly,
-         regardless of it already being compiled into InputOutput.dll via this explicit Compile
-         entry - since this type is referenced directly from ~95 Razor views (nonce="@CspNonce.Current"),
-         that would produce "type exists in both App_Code.xxx and InputOutput" (CS0433) once deployed.
-         Confirmed via /p:MvcBuildViews=true, which reproduces the same dynamic-compilation behavior
-         AspNetCompiler/BuildManager use at runtime. -->
-    <Compile Include="Models\CspNonce.cs" />
     <Compile Include="Models\Transaction.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>

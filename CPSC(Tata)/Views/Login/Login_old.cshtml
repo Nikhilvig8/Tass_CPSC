@@ -33,7 +33,7 @@
    
     <link rel="shortcut icon" href="favicon.ico" />
 
-    <script type="text/javascript" nonce="@CspNonce.Current">
+    <script type="text/javascript">
    function preventBack(){window.history.forward();}
     setTimeout("preventBack()", 0);
     window.onunload = function () { null };
@@ -44,7 +44,7 @@
 
     </script>
 
-    <script type="text/javascript" nonce="@CspNonce.Current">
+    <script type="text/javascript">
         $(document).keypress(function (e) {
             if (e.which == 13) {
                 //alert('You pressed enter!');
@@ -63,7 +63,7 @@
         {
             if (Session["Popup"].ToString() == "0")
             {
-            <script type="text/javascript" nonce="@CspNonce.Current">
+            <script type="text/javascript">
             window.onload = function()
 
 

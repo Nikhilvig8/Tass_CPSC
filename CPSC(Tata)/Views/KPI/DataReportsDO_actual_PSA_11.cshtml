@@ -183,7 +183,7 @@
                                                                                         else { value_tar_A = dtf2.Rows[i]["Last_M_A"].ToString(); }
                                                                                     }
                                                 <script src="~/Scripts/jquery3_1.js"></script>
-                                                <script nonce="@CspNonce.Current">
+                                                <script>
                                                 $(document).ready(function () {
                                                     var row_no1 = '@(i)';
                                                     var lastRowNo1 = row_no1;
@@ -274,7 +274,7 @@
     </div>
 </div>
 
-<script nonce="@CspNonce.Current">
+<script>
 $(document).ready(function () {
 
 
@@ -296,7 +296,7 @@ $(document).ready(function () {
 
 
 
-<script nonce="@CspNonce.Current">
+<script>
     function printData()
 {
         var divToPrint = document.getElementById("example");
@@ -381,7 +381,7 @@ $('#ExcelExport').on('click', function () {
 
 
 
-<script type="text/javascript" nonce="@CspNonce.Current">
+<script type="text/javascript">
     jQuery(function ($) {
         $("#Exporttopdf").click(function () {
             // parse the HTML table element having an id=exportTable
