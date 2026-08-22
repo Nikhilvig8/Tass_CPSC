@@ -33,6 +33,12 @@ namespace InputOutput
         {
             if (Request.IsSecureConnection) return;
 
+            // Local dev/debugging (IIS Express on localhost, e.g. F5 in Visual Studio) has no HTTPS
+            // listener on the same port - redirecting there would just be a dead end. This check
+            // never affects production traffic, which arrives through Cloudflare and is never
+            // IsLocal.
+            if (Request.IsLocal) return;
+
             string forwardedProto = Request.Headers["X-Forwarded-Proto"];
             if (!string.IsNullOrEmpty(forwardedProto))
             {
