@@ -116,7 +116,7 @@
 }
 
 <script src="~/Scripts/jquery3_1.js"></script>
-<script type="text/javascript">
+<script type="text/javascript" nonce="@CspNonce.Current">
     $(document).ready(function ()//When the dom is ready
     {
 
@@ -243,7 +243,7 @@
     });
 
 </script>
-<script type="text/javascript">
+<script type="text/javascript" nonce="@CspNonce.Current">
 
     function SelectedIndexChanged() {
         var Month_main = $("#Month_main").val();
@@ -622,7 +622,7 @@
                                         {
 
                                             <script src="~/Scripts/jquery3_1.js"></script>
-                                                <script>
+                                                <script nonce="@CspNonce.Current">
                                                     $(document).ready(function () {
 
                                                         $('[data-toggle="popover"]').popover({ trigger: 'focus' });
@@ -1327,7 +1327,7 @@
     </div>
 </div>
 
-<script>
+<script nonce="@CspNonce.Current">
     function onhygienelistclose() {
         var AllSelectCount = 0; //$(".Select_Value").length;
         var YesSelectCount = 0;

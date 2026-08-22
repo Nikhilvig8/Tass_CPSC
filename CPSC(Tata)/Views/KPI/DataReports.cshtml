@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <script src="~/Scripts/jquery3_1.js"></script>
-<script>
+<script nonce="@CspNonce.Current">
     $(document).ready(function () {
         $('#divisionList').rowspanizer({ vertical_align: 'middle' });
     });
@@ -155,7 +155,7 @@
 <link rel="stylesheet" type="text/css" href="~/assets/apps/css/all.min.css" />
 
 
-<script>
+<script nonce="@CspNonce.Current">
 
   
         $(document).ready(function () {
