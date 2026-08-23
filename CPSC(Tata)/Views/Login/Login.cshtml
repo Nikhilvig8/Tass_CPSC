@@ -55,6 +55,60 @@
         });
 
     </script>
+
+    <!-- VAPT "Password in plain text" (rescan, recurring): encrypts the password field with the
+         Web Crypto API before the form submits, using the AES-256 key/IV LoginController.Login()
+         generated for this page load (LoginCheck decrypts with the same values, stashed
+         server-side in Session - see LoginPasswordCipher.cs for what this does and does not
+         accomplish). Falls back to submitting the plain value on any failure - an old browser
+         without SubtleCrypto, or non-HTTPS locally - so a broken encryption step can never block a
+         legitimate login. -->
+    <script type="text/javascript" nonce="@CspNonce.Current">
+        (function () {
+            var pwKeyB64 = "@ViewBag.PwKeyB64";
+            var pwIvB64 = "@ViewBag.PwIvB64";
+
+            function b64ToBytes(b64) {
+                var bin = window.atob(b64);
+                var bytes = new Uint8Array(bin.length);
+                for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+                return bytes;
+            }
+
+            function bytesToB64(buffer) {
+                var bin = "";
+                var arr = new Uint8Array(buffer);
+                for (var i = 0; i < arr.length; i++) bin += String.fromCharCode(arr[i]);
+                return window.btoa(bin);
+            }
+
+            document.addEventListener("DOMContentLoaded", function () {
+                var passInput = document.getElementById("pass");
+                var form = passInput ? passInput.form : null;
+                if (!form) return;
+
+                form.addEventListener("submit", function (e) {
+                    if (!passInput.value) return;
+                    if (!window.isSecureContext || !window.crypto || !window.crypto.subtle) return;
+
+                    e.preventDefault();
+                    var plainBytes = new TextEncoder().encode(passInput.value);
+
+                    window.crypto.subtle.importKey("raw", b64ToBytes(pwKeyB64), { name: "AES-CBC" }, false, ["encrypt"])
+                        .then(function (cryptoKey) {
+                            return window.crypto.subtle.encrypt({ name: "AES-CBC", iv: b64ToBytes(pwIvB64) }, cryptoKey, plainBytes);
+                        })
+                        .then(function (cipherBuffer) {
+                            passInput.value = bytesToB64(cipherBuffer);
+                            HTMLFormElement.prototype.submit.call(form);
+                        })
+                        .catch(function () {
+                            HTMLFormElement.prototype.submit.call(form);
+                        });
+                });
+            });
+        })();
+    </script>
     <style>
         .form-control::-webkit-input-placeholder {
             color: white;

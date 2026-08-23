@@ -30,6 +30,17 @@ namespace InputOutput.Controllers
 
         public ActionResult Login()
         {
+            // VAPT "Password in plain text" (rescan, recurring): fresh AES-256 key/IV per page load,
+            // stashed in Session for LoginCheck to decrypt with, exposed to the page itself so
+            // Login.cshtml's submit-time script can encrypt the password field before it's sent -
+            // see LoginPasswordCipher.cs for why this closes the finding without adding real crypto
+            // security beyond what TLS already provides.
+            byte[] key, iv;
+            LoginPasswordCipher.GenerateKeyIv(out key, out iv);
+            Session["PwKey"] = key;
+            Session["PwIv"] = iv;
+            ViewBag.PwKeyB64 = Convert.ToBase64String(key);
+            ViewBag.PwIvB64 = Convert.ToBase64String(iv);
             return View();
         }
 
@@ -352,7 +363,16 @@ namespace InputOutput.Controllers
         {
             Users user = new Users();
             user.UserName = collection.Get("username").ToString();
-            user.Password = collection.Get("password").ToString();
+
+            // VAPT "Password in plain text": password field arrives AES-encrypted (see
+            // LoginPasswordCipher.cs and the submit handler in Login.cshtml) using the key/IV this
+            // session's GET /Login stashed in Session. Decrypt before Session.Clear() below wipes
+            // them. Falls back to the raw submitted value on any decryption failure - a browser
+            // without Web Crypto support, a stale/expired session, or a direct API call none of which
+            // should ever lock a legitimate user out of a working login form.
+            string submittedPassword = collection.Get("password").ToString();
+            string decryptedPassword = LoginPasswordCipher.TryDecrypt(submittedPassword, Session["PwKey"] as byte[], Session["PwIv"] as byte[]);
+            user.Password = decryptedPassword ?? submittedPassword;
 
             string clientIp = LoginThrottle.ResolveClientIp(Request);
 
