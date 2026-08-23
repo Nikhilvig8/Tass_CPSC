@@ -136,6 +136,21 @@ namespace InputOutput
                 + "frame-ancestors 'self'; object-src 'none';";
             response.Headers.Remove("Content-Security-Policy");
             response.Headers.Add("Content-Security-Policy", csp);
+
+            // VAPT "Password in plain text" (rescan, recurring): the Application_BeginRequest 301
+            // redirect above can't protect a request that already happened - for a POST login, the
+            // password is fully transmitted over the first HTTP connection before this app ever gets
+            // a chance to redirect it. Without HSTS, every fresh visit (no cached browser policy)
+            // still starts as a plaintext HTTP request, so an on-path attacker can SSL-strip
+            // indefinitely regardless of the redirect. This tells the browser to never attempt HTTP
+            // for this host again once received once over HTTPS. Only sent over HTTPS responses -
+            // sending it over plain HTTP is meaningless (browsers ignore it) and could be misread as
+            // this app expecting HTTP to carry the header.
+            if (Request.IsSecureConnection)
+            {
+                response.Headers.Remove("Strict-Transport-Security");
+                response.Headers.Add("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+            }
         }
 
         // Global catch-all: fires for the original unhandled exception before customErrors' redirect,
