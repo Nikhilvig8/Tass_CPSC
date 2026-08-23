@@ -42,8 +42,13 @@
 
     <script type="text/javascript" nonce="@CspNonce.Current">
         function preventBack() { window.history.forward(); }
-        setTimeout("preventBack()", 0);
-        window.onunload = function () { null };
+        // VAPT "Missing HTTP Security Headers": setTimeout("preventBack()", 0) - a STRING argument -
+        // requires 'unsafe-eval' in script-src to run at all. This layout renders on every
+        // authenticated page, so this one call was blocking on the whole app, not just login (see
+        // the matching fix + explanation in Views/Login/Login.cshtml). Passing the function
+        // reference instead needs no CSP exception. window.onunload's no-op handler is also gone -
+        // it did nothing and only produced a "Permissions policy violation: unload" console warning.
+        setTimeout(preventBack, 0);
         history.pushState(null, null, document.URL);
         window.addEventListener('popstate', function () {
             history.pushState(null, null, document.URL);

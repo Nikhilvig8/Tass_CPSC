@@ -37,8 +37,13 @@
 
     <script type="text/javascript" nonce="@CspNonce.Current">
    function preventBack(){window.history.forward();}
-    setTimeout("preventBack()", 0);
-    window.onunload = function () { null };
+    // VAPT "Missing HTTP Security Headers": setTimeout("preventBack()", 0) - a STRING argument -
+    // requires the browser to evaluate it as code, which needs 'unsafe-eval' in script-src. Passing
+    // the function reference instead does exactly the same thing without needing that CSP
+    // exception (confirmed live: console showed this exact call being blocked as an eval violation
+    // once 'unsafe-eval' was removed). window.onunload's no-op handler is also gone - it did
+    // nothing and only produced a "Permissions policy violation: unload" console warning.
+    setTimeout(preventBack, 0);
     history.pushState(null, null, document.URL);
     window.addEventListener('popstate', function () {
         history.pushState(null, null, document.URL);

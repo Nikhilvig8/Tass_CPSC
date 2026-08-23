@@ -24,8 +24,10 @@
     <link rel="shortcut icon" href="favicon.ico" />
     <script type="text/javascript" nonce="@CspNonce.Current">
         function preventBack() { window.history.forward(); }
-        setTimeout("preventBack()", 0);
-        window.onunload = function () { null };
+        // VAPT "Missing HTTP Security Headers": a string argument to setTimeout needs 'unsafe-eval'
+        // in script-src to run at all; the function reference doesn't. See Views/Login/Login.cshtml
+        // for the live console evidence this was actually being blocked.
+        setTimeout(preventBack, 0);
         history.pushState(null, null, document.URL);
         window.addEventListener('popstate', function () {
             history.pushState(null, null, document.URL);
