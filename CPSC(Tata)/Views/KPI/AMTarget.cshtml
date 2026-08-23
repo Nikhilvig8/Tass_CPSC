@@ -814,9 +814,13 @@
                                                             }
                                                             else
                                                             {
+                                                        @* VAPT "Component Using Known Vulnerabilities": data-html="true" removed - CVE-2024-6485/
+                                                           CVE-2025-1647 (Bootstrap 3.x, no upstream patch) are XSS via data-* attributes rendered
+                                                           as HTML. This tooltip's content comes from the KPI data model, not static markup, so
+                                                           Bootstrap's popover now renders it as escaped plain text instead of raw HTML. *@
                                                         <input @disable style="font-size:10px;" type="@data.Input_Type" pattern="@data.Input_Pattern" onkeypress="@data.Input_OnKey" class="form-control" data-toggle="popover"
                                                                data-trigger="focus" data-placement="left"
-                                                               data-content="@data.SingelEntry_Tooltip_Target" data-html="true" id="target_main@(i)" name="Target@(i)" value=@data.Target>
+                                                               data-content="@data.SingelEntry_Tooltip_Target" id="target_main@(i)" name="Target@(i)" value=@data.Target>
                                                         
                                                             }
                                                         }
