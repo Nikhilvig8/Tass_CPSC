@@ -146,7 +146,7 @@
                            $('<option/>', {
                                value: ''
                            }).html('Dealer'));
-                $.each(eval(data.replace(/[\r\n]/, "")), function (i, item) {
+                $.each(JSON.parse(data.replace(/[\r\n]/, "")), function (i, item) {
                     ddl.append(
                           $('<option/>', {
                               value: item.Dealer_Code
@@ -178,7 +178,7 @@
                            $('<option/>', {
                                value: ''
                            }).html('Division'));
-                $.each(eval(data.replace(/[\r\n]/, "")), function (i, item) {
+                $.each(JSON.parse(data.replace(/[\r\n]/, "")), function (i, item) {
                     ddl.append(
                           $('<option/>', {
                               value: item.Division_Id + "/" + item.Dealer_Code
@@ -228,7 +228,7 @@
                            $('<option/>', {
                                value: ''
                            }).html('LOB'));
-                $.each(eval(data.replace(/[\r\n]/, "")), function (i, item) {
+                $.each(JSON.parse(data.replace(/[\r\n]/, "")), function (i, item) {
                     ddl.append(
                           $('<option/>', {
                               value: item.LOB_ID

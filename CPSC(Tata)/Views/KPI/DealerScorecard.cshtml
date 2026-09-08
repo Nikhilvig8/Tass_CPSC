@@ -35,7 +35,7 @@
                 var html = "";
                 var curDealer = "";
                 ddl.empty();
-                $.each(eval(data.replace(/[\r\n]/, "")), function (i, item) {
+                $.each(JSON.parse(data.replace(/[\r\n]/, "")), function (i, item) {
                     //if (curDealer != item.Dealer_Name)
                     //{
                     //    html += ('<tr><td id="td" rowspan="' + item.RowSpan + '" width="50%">' + item.Dealer_Name + '</td><td width="25%"  id="td">' + item.LOB + '</td><td id="td" width="25%">' + item.Score + '</td></tr>');

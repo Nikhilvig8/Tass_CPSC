@@ -64,7 +64,7 @@
 
                 var html = "";
                 var columnCount = "";
-                $.each(eval(column.replace(/[\r\n]/, "")), function (i, item) {
+                $.each(JSON.parse(column.replace(/[\r\n]/, "")), function (i, item) {
                     if (item.Column_Name == 'Dealer_Code' || item.Column_Name == 'LOB_ID' || item.Column_Name == 'Division_Id' || item.Column_Name == 'Order_Level' || item.Column_Name == 'Dealer_Level' || item.Column_Name == 'Division_Level' || item.Column_Name == 'LOB_Level') { }
                     else
                     {
@@ -94,7 +94,7 @@
 
                 var htmlData = "";
                 var s = "0";
-                $.each(eval(data.replace(/[\r\n]/, "")), function (ii, itemi) {
+                $.each(JSON.parse(data.replace(/[\r\n]/, "")), function (ii, itemi) {
 
                     htmlData += "<tr>";
 

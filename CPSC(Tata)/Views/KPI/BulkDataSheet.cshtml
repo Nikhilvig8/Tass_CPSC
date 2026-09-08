@@ -96,7 +96,7 @@
 
                 var html = "";
                 var columnCount = "";
-                $.each(eval(column.replace(/[\r\n]/, "")), function (i, item) {
+                $.each(JSON.parse(column.replace(/[\r\n]/, "")), function (i, item) {
                     if (item.Column_Name == 'Dealer_Code' || item.Column_Name == 'LOB_ID' || item.Column_Name == 'Division_Id' || item.Column_Name == 'Order_Level' || item.Column_Name == 'Dealer_Level' || item.Column_Name == 'Division_Level' || item.Column_Name == 'LOB_Level') { }
                     else
                     {
@@ -126,7 +126,7 @@
 
                 var htmlData = "";
                 var s = "0";
-                $.each(eval(data.replace(/[\r\n]/, "")), function (ii, itemi) {
+                $.each(JSON.parse(data.replace(/[\r\n]/, "")), function (ii, itemi) {
 
                     htmlData += "<tr>";
                     var t = "0";
@@ -296,7 +296,7 @@
                     });
 
                     //var s1 = "0";
-                    //$.each(eval(data.replace(/[\r\n]/, "")), function (iii, itemii) {
+                    //$.each(JSON.parse(data.replace(/[\r\n]/, "")), function (iii, itemii) {
                     //    var t1 = "0";
                     //    for (p1 in itemii) {
                     //        if (t1 == "0" || t1 == "1" || t1 == "3" || t1 == "5" || t1 == "6" || t1 == "7" || t1 == "2" || t1 == "4" || t1 == "8") {
@@ -475,7 +475,7 @@
             //alert(data);
             var html = '<table class="table"><thead><tr><th class="col-md-1">No.</th><th class="col-md-5">Description</th><th class="col-md-3">LOB</th><th class="col-md-3">&nbsp;</th></tr></thead><tbody><input type="hidden" name="input_id" id="input_id" value="' + input_id_hy + '" />';
 
-            $.each(eval(data.replace(/[\r\n]/, "")), function (i, item) {
+            $.each(JSON.parse(data.replace(/[\r\n]/, "")), function (i, item) {
 
                  if (item["Selection"] == "NO") {
                     html += ('<tr><td class="col-md-1">' + item["SerialNo"] + '</td><td class="col-md-7"><span style="">' + item["Description"] + '</span></td><td class="col-md-3"><select id="Select_Value" name="Select_Value" class="form-control Select_Value hygiene ' + input_id_hy + '" style="margin-bottom:2px;"><option value="' + item["SerialNo"] + '<<>>' + item["Description"] + '" selected>No</option><option value="' + item["SerialNo"] + '<<>>' + item["Description"] + '" >Yes</option></select></td></tr>');
@@ -523,7 +523,7 @@
             //alert(data);
             var html = '<table class="table"><thead><tr><th class="col-md-1">No.</th><th class="col-md-5">Description</th><th class="col-md-3">Selection</th><th class="col-md-3">&nbsp;</th></tr></thead><tbody><input type="hidden" name="input_id" id="input_id" value="' + input_id_ciaudit + '" />';
 
-            $.each(eval(data.replace(/[\r\n]/, "")), function (i, item) {
+            $.each(JSON.parse(data.replace(/[\r\n]/, "")), function (i, item) {
                 //alert(item);
                 if (item["Selection"] == "NO") {
                     html += ('<tr><td class="col-md-1">' + item["SerialNo"] + '</td><td class="col-md-7"><span style="">' + item["Description"] + '</span></td><td class="col-md-3"><select id="Select_Value" name="Select_Value" class="form-control Select_Value  ciaudit ' + input_id_ciaudit + '" style="margin-bottom:2px;"><option value="' + item["SerialNo"] + '<<>>' + item["Description"] + '<<>>' + item["Weightage"] + '" selected>No</option><option value="' + item["SerialNo"] + '<<>>' + item["Description"] + '<<>>' + item["Weightage"] + '" >Yes</option></select></td></tr>');
@@ -572,7 +572,7 @@
             //alert(data);
             var html = '<table class="table"><thead><tr><th class="col-md-1">No.</th><th class="col-md-5">Description</th><th class="col-md-3">Selection</th><th class="col-md-3">&nbsp;</th></tr></thead><tbody><input type="hidden" name="input_id" id="input_id" value="' + input_id_dwm + '" />';
 
-            $.each(eval(data.replace(/[\r\n]/, "")), function (i, item) {
+            $.each(JSON.parse(data.replace(/[\r\n]/, "")), function (i, item) {
                 //alert(item);
                 if (item["Selection"] == "NO") {
                     html += ('<tr><td class="col-md-1">' + item["SerialNo"] + '</td><td class="col-md-7"><span style="">' + item["Description"] + '</span></td><td class="col-md-3"><select id="Select_Value" name="Select_Value" class="form-control Select_Value  dwm ' + input_id_dwm + '" style="margin-bottom:2px;"><option value="' + item["SerialNo"] + '<<>>' + item["Description"] + '<<>>' + item["Weightage"] + '" selected>No</option><option value="' + item["SerialNo"] + '<<>>' + item["Description"] + '<<>>' + item["Weightage"] + '" >Yes</option></select></td></tr>');
@@ -623,7 +623,7 @@
             //alert(data);
             var html = '<table class="table"><thead><tr><th class="col-md-1">No.</th><th class="col-md-5">Description</th><th class="col-md-3">Selection</th><th class="col-md-3">&nbsp;</th></tr></thead><tbody><input type="hidden" name="input_id" id="input_id" value="' + input_id_safety + '" />';
 
-            $.each(eval(data.replace(/[\r\n]/, "")), function (i, item) {
+            $.each(JSON.parse(data.replace(/[\r\n]/, "")), function (i, item) {
                 //alert(item);
                 if (item["Selection"] == "NO") {
                     html += ('<tr><td class="col-md-1">' + item["SerialNo"] + '</td><td class="col-md-7"><span style="">' + item["Description"] + '</span></td><td class="col-md-3"><select id="Select_Value" name="Select_Value" class="form-control Select_Value  safety ' + input_id_safety + '" style="margin-bottom:2px;"><option value="' + item["SerialNo"] + '<<>>' + item["Description"] + '<<>>' + item["Weightage"] + '" selected>No</option><option value="' + item["SerialNo"] + '<<>>' + item["Description"] + '<<>>' + item["Weightage"] + '" >Yes</option></select></td></tr>');
@@ -643,7 +643,7 @@
 
 
             });
-            //$.each(eval(data.replace(/[\r\n]/, "")), function (i, item) {
+            //$.each(JSON.parse(data.replace(/[\r\n]/, "")), function (i, item) {
             //    //alert(item);
             //    if (item["Selection"] == "0") {
             //        html += ('<tr><td class="col-md-1">' + item["SerialNo"] + '</td><td class="col-md-7"><span style="">' + item["Description"] + '</span></td><td class="col-md-3"><select id="Select_Value" name="Select_Value" class="form-control Select_Value  safety ' + input_id_safety + '" style="margin-bottom:2px;"><option value="' + item["SerialNo"] + '<<>>' + item["Description"] +  '" selected>0</option><option value="' + item["SerialNo"] + '<<>>' + item["Description"] + '" >1</option><option value="' + item["SerialNo"] + '<<>>' + item["Description"] +  '" >2</option><option value="' + item["SerialNo"] + '<<>>' + item["Description"] +  '" >3</option></select></td></tr>');
@@ -698,7 +698,7 @@
             //alert(data);
             var html = '<table class="table"><thead><tr><th class="col-md-3">Id</th><th class="col-md-6">Description</th><th class="col-md-3">&nbsp;</th></tr></thead><tbody><input type="hidden" name="input_id" id="input_id" value="' + input_id_dse + '" />';
 
-            $.each(eval(data.replace(/[\r\n]/, "")), function (i, item) {
+            $.each(JSON.parse(data.replace(/[\r\n]/, "")), function (i, item) {
 
                 if (item["Selection"] == "NO")
                 {
@@ -742,7 +742,7 @@
             //alert(data);
             var html = '<table class="table"><thead><tr><th class="col-md-3">Id</th><th class="col-md-6">Description</th><th class="col-md-3">&nbsp;</th></tr></thead><tbody><input type="hidden" name="input_id" id="input_id" value="' + input_id + '" />';
 
-            $.each(eval(data.replace(/[\r\n]/, "")), function (i, item) {
+            $.each(JSON.parse(data.replace(/[\r\n]/, "")), function (i, item) {
 
                 if (item["Selection"] == "NO")
                 {
@@ -785,7 +785,7 @@
             //alert(data);
             var html = '<table class="table"><thead><tr><th class="col-md-3">DSE Name</th><th class="col-md-6">Event</th><th class="col-md-3">&nbsp;</th></tr></thead><tbody><input type="hidden" name="input_id" id="input_id" value="' + input_id_sal + '" />';
 
-            $.each(eval(data.replace(/[\r\n]/, "")), function (i, item) {
+            $.each(JSON.parse(data.replace(/[\r\n]/, "")), function (i, item) {
 
                 if (item["Selection"] == "NO") {
                     html += ('<tr><td class="col-md-3">' + item["DSE_Name"] + '</td><td class="col-md-6"><span style="">' + item["Event"] + '</span><td class="col-md-3"><select id="Select_Value" name="Select_Value" class="form-control Select_Value ' + input_id_sal + '" style="margin-bottom:2px;"><option value="' + item["DSE_Name"] + '<<>>' + item["Event"] + '" selected>No</option><option value="' + item["DSE_Name"] + '<<>>' + item["Event"] + '" >Yes</option></select></td></tr>');

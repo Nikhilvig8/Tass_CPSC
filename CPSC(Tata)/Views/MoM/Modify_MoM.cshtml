@@ -213,7 +213,7 @@
                     var column = split_res[0];
                     var data = split_res[1];
 
-                    $.each(eval(column.replace(/[\r\n]/, "")), function (i, item) {
+                    $.each(JSON.parse(column.replace(/[\r\n]/, "")), function (i, item) {
 
 
                         $("#TOD").val(item.TOD);
@@ -227,7 +227,7 @@
                     var htmlData = "";
                     var s = 1;
 
-                    $.each(eval(data.replace(/[\r\n]/, "")), function (ii, itemi) {
+                    $.each(JSON.parse(data.replace(/[\r\n]/, "")), function (ii, itemi) {
 
 
                         htmlData += "<tr>";

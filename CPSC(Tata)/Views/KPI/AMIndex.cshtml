@@ -30,7 +30,7 @@ $(document).ready(function()//When the dom is ready
         var dealer_as = "";
         var division_as = "";
         var lob_as = "";
-        $.each(eval(data_as.replace(/[\r\n]/, "")), function (i, item) {
+        $.each(JSON.parse(data_as.replace(/[\r\n]/, "")), function (i, item) {
             
             dealer_as += "<option value='" + item.Dealer_Code + "' selected='selected'>" + item.Dealer_Name + "</option>";
             division_as += "<option value='" + item.Division_Id + "/" + item.Dealer_Code + "' selected='selected'>" + item.Division_Name + "</option>";
@@ -74,7 +74,7 @@ $(document).ready(function()//When the dom is ready
                        $('<option/>', {
                            value: ''
                        }).html('Dealer'));
-            $.each(eval(data.replace(/[\r\n]/, "")), function (i, item) {
+            $.each(JSON.parse(data.replace(/[\r\n]/, "")), function (i, item) {
                 ddl.append(
                       $('<option/>', {
                           value: item.Dealer_Code
@@ -109,7 +109,7 @@ $(document).ready(function()//When the dom is ready
                        $('<option/>', {
                            value: ''
                        }).html('Division'));
-            $.each(eval(data.replace(/[\r\n]/, "")), function (i, item) {
+            $.each(JSON.parse(data.replace(/[\r\n]/, "")), function (i, item) {
                 ddl.append(
                       $('<option/>', {
                           value: item.Division_Id+"/"+item.Dealer_Code
@@ -158,7 +158,7 @@ $(document).ready(function()//When the dom is ready
                        $('<option/>', {
                            value: ''
                        }).html('LOB'));
-            $.each(eval(data.replace(/[\r\n]/, "")), function (i, item) {
+            $.each(JSON.parse(data.replace(/[\r\n]/, "")), function (i, item) {
                 ddl.append(
                       $('<option/>', {
                           value: item.LOB_ID
