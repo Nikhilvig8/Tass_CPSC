@@ -308,6 +308,7 @@ namespace InputOutput.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult TempDWMAuditListData(string month, string year, string dealer_code, string division_id, string lob_id, string KPI, List<Bvalues_dwm> select_jdata)
         {
 
@@ -395,6 +396,7 @@ namespace InputOutput.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult TempSafetyAuditListData(string month, string year, string dealer_code, string division_id, string lob_id, string KPI, List<Bvalues_saf> select_jdata)
         {
 
@@ -529,6 +531,7 @@ namespace InputOutput.Controllers
 
         
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult TempDSEData(string month, string year, string dealer_code, string division_id, string lob_id,string KPI,List <Bvalues_dse> select_jdata)
           {
             DataTable dt;
@@ -613,6 +616,7 @@ namespace InputOutput.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult TempDSMData(string month, string year, string dealer_code, string division_id, string lob_id, string KPI, List<Bvalues_dsm>  select_jdata)
         {
 
@@ -1086,7 +1090,8 @@ namespace InputOutput.Controllers
 
 
             cmdObj = new SqlCommand();
-            cmdObj.CommandText = procname;
+            // Checkmarx "SQL_Injection": the procedure name comes from the query string - allow-listed.
+            cmdObj.CommandText = SqlGuard.ResolveProcedure(procname);
 
             cmdObj.Parameters
                 .Add(new SqlParameter("@User_id", SqlDbType.NVarChar))
@@ -1116,7 +1121,7 @@ namespace InputOutput.Controllers
             return Json(status, JsonRequestBehavior.AllowGet);
         }
 
-        public DataTable ToDataTable<T>(List<T> items)
+        private DataTable ToDataTable<T>(List<T> items)
         {
             DataTable dataTable = new DataTable(typeof(T).Name);
 
@@ -1142,11 +1147,7 @@ namespace InputOutput.Controllers
             //put a breakpoint here and check datatable
             return dataTable;
         }
-        public static string Base64Decode(string base64EncodedData)
-        {
-            return System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(base64EncodedData));
-        }
-        public DataTable JsonStringToDataTable(string jsonString)
+        private DataTable JsonStringToDataTable(string jsonString)
         {
             DataTable dt = new DataTable();
             string[] jsonStringArray = Regex.Split(jsonString.Replace("[", "").Replace("]", ""), "},{");
@@ -1199,7 +1200,7 @@ namespace InputOutput.Controllers
             }
             return dt;
         }
-        public string DataTableToJSONWithJavaScriptSerializer(DataTable table)
+        private string DataTableToJSONWithJavaScriptSerializer(DataTable table)
         {
             JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
             List<Dictionary<string, object>> parentRow = new List<Dictionary<string, object>>();

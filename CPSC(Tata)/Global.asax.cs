@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Configuration;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
+using System.Web.Helpers;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
@@ -15,6 +18,9 @@ namespace InputOutput
             // VAPT "Server Version Disclosure": drops the X-AspNetMvc-Version response header.
             // X-AspNet-Version is separately disabled via Web.config's enableVersionHeader="false".
             MvcHandler.DisableMvcResponseHeader = true;
+            // Web.config already sends X-Frame-Options: SAMEORIGIN for every response; without this
+            // @Html.AntiForgeryToken() would append a second copy of the same header.
+            AntiForgeryConfig.SuppressXFrameOptionsHeader = true;
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
@@ -52,20 +58,54 @@ namespace InputOutput
                 if (string.Equals(forwardedProto, "https", StringComparison.OrdinalIgnoreCase)) return;
             }
 
-            // Request.Url.Host is the hostname ONLY - it never includes the port (that's the separate
-            // Request.Url.Port property). Appending it bare works for production (standard port 443,
-            // implicit) but would silently drop any non-standard port for anything else hitting this
-            // path. Preserve it explicitly whenever it isn't the plain-HTTP default (80).
-            string host = Request.Url.Host;
-            if (Request.Url.Port != 80 && Request.Url.Port != -1)
+            // Checkmarx "Reflected_XSS" / open redirect: the target used to be "https://" + Host
+            // header + Request.RawUrl, i.e. two attacker-controlled values copied verbatim into the
+            // Location header. Now:
+            //  - the host is the configured CanonicalHost appSetting when present, otherwise the
+            //    request host only if it is a plain DNS name/IP (no userinfo, slashes, CR/LF...);
+            //  - the path and every query key/value are URL-encoded individually.
+            // (Port is never appended: this branch only runs for port-80 traffic, see above.)
+            string host = ConfigurationManager.AppSettings["CanonicalHost"];
+            if (string.IsNullOrWhiteSpace(host))
             {
-                host += ":" + Request.Url.Port;
+                host = Request.Url.Host;
             }
-            string httpsUrl = "https://" + host + Request.RawUrl;
-            Response.Status = "301 Moved Permanently";
-            Response.RedirectLocation = httpsUrl;
-            Response.End();
+            host = host.Trim();
+            if (!SafeHostPattern.IsMatch(host))
+            {
+                Response.StatusCode = 400;
+                Context.ApplicationInstance.CompleteRequest();
+                return;
+            }
+
+            var target = new StringBuilder("https://");
+            target.Append(host);
+            target.Append(HttpUtility.UrlPathEncode(Request.Url.AbsolutePath));
+            var query = HttpUtility.ParseQueryString(Request.Url.Query);
+            string separator = "?";
+            foreach (string key in query.AllKeys)
+            {
+                foreach (string value in query.GetValues(key) ?? new string[0])
+                {
+                    target.Append(separator);
+                    if (key != null)
+                    {
+                        target.Append(HttpUtility.UrlEncode(key)).Append('=');
+                    }
+                    target.Append(HttpUtility.UrlEncode(value));
+                    separator = "&";
+                }
+            }
+
+            // Checkmarx "Missing_HSTS_Header": set explicitly on the redirect response as well (the
+            // site-wide header comes from Web.config <customHeaders>).
+            Response.AppendHeader("Strict-Transport-Security", HstsHeaderValue);
+            Response.RedirectPermanent(target.ToString(), false);
+            Context.ApplicationInstance.CompleteRequest();
         }
+
+        private const string HstsHeaderValue = "max-age=31536000; includeSubDomains";
+        private static readonly Regex SafeHostPattern = new Regex(@"^[A-Za-z0-9](?:[A-Za-z0-9\-\.]{0,251}[A-Za-z0-9])?$", RegexOptions.Compiled);
 
         // VAPT "Missing HTTP Security Headers" (rescan): removes 'unsafe-inline' from script-src.
         // One fresh nonce per request - every inline <script> tag across the app carries this same
@@ -146,11 +186,12 @@ namespace InputOutput
             // for this host again once received once over HTTPS. Only sent over HTTPS responses -
             // sending it over plain HTTP is meaningless (browsers ignore it) and could be misread as
             // this app expecting HTTP to carry the header.
-            if (Request.IsSecureConnection)
-            {
-                response.Headers.Remove("Strict-Transport-Security");
-                response.Headers.Add("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
-            }
+            //
+            // Checkmarx "Missing_HSTS_Header": the header is now emitted unconditionally for every
+            // response (browsers ignore it over plain HTTP, so that is harmless), and Web.config's
+            // <customHeaders> entry was aligned to the same value so only one policy is ever sent.
+            response.Headers.Remove("Strict-Transport-Security");
+            response.Headers.Add("Strict-Transport-Security", HstsHeaderValue);
         }
 
         // Global catch-all: fires for the original unhandled exception before customErrors' redirect,

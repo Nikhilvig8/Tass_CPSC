@@ -20,3 +20,11 @@ Logs/
 ## OS files
 Thumbs.db
 .DS_Store
+
+# Checkmarx Secret Detection: real credentials are kept OUT of source control.
+# Templates (committed): CPSC(Tata)/connectionStrings.config.example, CPSC(Tata)/secrets.config.example
+CPSC(Tata)/connectionStrings.config
+CPSC(Tata)/secrets.config
+
+# Temporary Excel uploads (UploadGuard.SaveExcelToTemp) - deleted after processing.
+CPSC(Tata)/App_Data/Uploads/

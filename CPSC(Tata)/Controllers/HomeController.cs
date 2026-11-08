@@ -114,6 +114,7 @@ namespace InputOutput.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult ProfitabilityReport(FormCollection form)
         {
             string userId = Session["Uid"].ToString();
@@ -215,6 +216,7 @@ namespace InputOutput.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult WorkshopDetails(FormCollection form)
         {
             string userId = Session["Uid"].ToString();
@@ -331,6 +333,7 @@ namespace InputOutput.Controllers
         public ActionResult DataDumpDownload(string file)
         {
             //get the temp folder and file path in server
+            file = SqlGuard.SafeReportFileName(file); // Path traversal: only a bare, sanitized file name inside ~/Reports
             string fullPath = Path.Combine(Server.MapPath("~/Reports"), file);
 
             //return the file for download, this is an Excel 
@@ -518,7 +521,6 @@ namespace InputOutput.Controllers
         {
             //var client = new RestClient("https://infoviz.cv.tatamotors/trusted");
             //var request = new RestRequest(Method.POST);
-            //request.AddHeader("postman-token", "d7f81c00-9f2a-b346-14ce-e9bcd57fdba8");
             //request.AddHeader("cache-control", "no-cache");
             //request.AddHeader("content-type", "application/x-www-form-urlencoded");
             //request.AddParameter("application/x-www-form-urlencoded", "username=PSHANBHAG&target_site=CPSCTMLSite", ParameterType.RequestBody);
@@ -616,7 +618,7 @@ namespace InputOutput.Controllers
                 DataTable dt = new DataTable("Report");
                 string CS1 = ConfigurationManager.ConnectionStrings["constr"].ConnectionString;
                 string _sql2 = string.Empty;
-                _sql2 = Proc;
+                _sql2 = SqlGuard.ResolveProcedure(Proc);
                 using (SqlConnection cn = new SqlConnection(CS1))
                 {
 
@@ -648,7 +650,7 @@ namespace InputOutput.Controllers
                     wb.Worksheets.Add(dt);
 
                     string path = AppDomain.CurrentDomain.BaseDirectory + "Reports";
-                    filename = path + "\\" + filename;
+                    filename = path + "\\" + SqlGuard.SafeReportFileName(filename);
                     wb.SaveAs(filename);
 
                 }
@@ -660,7 +662,7 @@ namespace InputOutput.Controllers
                 DataTable dt = new DataTable("Report");
                 string CS1 = ConfigurationManager.ConnectionStrings["constr"].ConnectionString;
                 string _sql2 = string.Empty;
-                _sql2 = Proc;
+                _sql2 = SqlGuard.ResolveProcedure(Proc);
                 using (SqlConnection cn = new SqlConnection(CS1))
                 {
 
@@ -692,7 +694,7 @@ namespace InputOutput.Controllers
                     wb.Worksheets.Add(dt);
 
                     string path = AppDomain.CurrentDomain.BaseDirectory + "Reports";
-                    filename = path + "\\" + filename;
+                    filename = path + "\\" + SqlGuard.SafeReportFileName(filename);
                     wb.SaveAs(filename);
 
                 }
@@ -704,7 +706,7 @@ namespace InputOutput.Controllers
                 DataTable dt = new DataTable("Report");
                 string CS1 = ConfigurationManager.ConnectionStrings["constr"].ConnectionString;
                 string _sql2 = string.Empty;
-                _sql2 = Proc;
+                _sql2 = SqlGuard.ResolveProcedure(Proc);
                 using (SqlConnection cn = new SqlConnection(CS1))
                 {
 
@@ -736,7 +738,7 @@ namespace InputOutput.Controllers
                     wb.Worksheets.Add(dt);
 
                     string path = AppDomain.CurrentDomain.BaseDirectory + "Reports";
-                    filename = path + "\\" + filename;
+                    filename = path + "\\" + SqlGuard.SafeReportFileName(filename);
                     wb.SaveAs(filename);
 
                 }
@@ -750,7 +752,8 @@ namespace InputOutput.Controllers
     public ActionResult Download(string file)
     {
         //get the temp folder and file path in server
-        string fullPath = Path.Combine(Server.MapPath("~/Reports"), file);
+        file = SqlGuard.SafeReportFileName(file); // Path traversal: only a bare, sanitized file name inside ~/Reports
+            string fullPath = Path.Combine(Server.MapPath("~/Reports"), file);
 
         //return the file for download, this is an Excel 
         //so I set the file content type to "application/vnd.ms-excel"

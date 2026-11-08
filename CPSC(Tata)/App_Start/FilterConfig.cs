@@ -16,6 +16,9 @@ namespace InputOutput
             filters.Add(new NoCacheAttribute());
             // VAPT "Concurrent login allowed": at most one active session per username.
             filters.Add(new SingleSessionAttribute());
+            // Checkmarx "CSRF": every POST must carry a valid anti-forgery token (see
+            // AntiForgeryOnPostAttribute.cs and Scripts/csrf-guard.js).
+            filters.Add(new AntiForgeryOnPostAttribute());
         }
     }
 }

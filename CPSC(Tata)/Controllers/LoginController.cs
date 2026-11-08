@@ -10,6 +10,7 @@ using System.Net;
 using System.Text;
 using System.Data.SqlClient;
 using System.Data;
+using System.Configuration;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -129,12 +130,19 @@ namespace InputOutput.Controllers
             return View();
         }
 
-        public string GenerateJWTToken()
+        // private: as a public controller method this was itself an MVC action (GET
+        // /Login/GenerateJWTToken handed out a signed Tableau token).
+        private string GenerateJWTToken()
         {
-
-            string clientID = "125cfcd0-8a17-4ddc-a339-207dc74316c0";
-            string secret = "04792cab-96eb-49b2-ab79-b20cccb5c846";
-            string secretValue = "HikJapy4sqbKQGqpU5X4hTD3qp0CIWZgtf/qTeNbDuo=";
+            // Checkmarx Secret Detection: the Tableau connected-app id / secret id / secret value are
+            // read from appSettings (kept in the untracked secrets.config), not compiled in.
+            string clientID = ConfigurationManager.AppSettings["TableauClientId"];
+            string secret = ConfigurationManager.AppSettings["TableauSecretId"];
+            string secretValue = ConfigurationManager.AppSettings["TableauSecretValue"];
+            if (string.IsNullOrEmpty(clientID) || string.IsNullOrEmpty(secret) || string.IsNullOrEmpty(secretValue))
+            {
+                throw new ConfigurationErrorsException("Tableau connected-app settings (TableauClientId/TableauSecretId/TableauSecretValue) are missing from secrets.config.");
+            }
             string username = Session["Uid"].ToString();
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -276,7 +284,7 @@ namespace InputOutput.Controllers
             // Belt-and-suspenders alongside Abandon(), same as Logout() already does: guarantees the
             // browser can't keep presenting the pre-auth session ID even if some intermediary
             // re-sends it.
-            Response.Cookies.Add(new HttpCookie("ASP.NET_SessionId", "") { Expires = DateTime.Now.AddDays(-1) });
+            Response.Cookies.Add(new HttpCookie("ASP.NET_SessionId", "") { Expires = DateTime.Now.AddDays(-1), HttpOnly = true, Secure = true });
 
             return RedirectToAction("CompleteLogin", "Login");
         }
@@ -292,7 +300,7 @@ namespace InputOutput.Controllers
             if (pendingCookie != null)
             {
                 // Single-use: remove immediately regardless of outcome so it can't be replayed.
-                Response.Cookies.Add(new HttpCookie(PendingLoginCookieName, "") { Expires = DateTime.Now.AddDays(-1) });
+                Response.Cookies.Add(new HttpCookie(PendingLoginCookieName, "") { Expires = DateTime.Now.AddDays(-1), HttpOnly = true, Secure = true });
             }
 
             FormsAuthenticationTicket ticket = null;
@@ -656,23 +664,18 @@ namespace InputOutput.Controllers
             return View(user1);
         }
 
-        public void ImageSave(HttpPostedFileBase file, string name)
+        // Checkmarx "Dangerous_File_Extension": the upload used to be written verbatim as
+        // <name>.jpg whatever its real type/content. UploadGuard only accepts a real JPEG/PNG
+        // (extension + magic bytes + size cap) and builds the file name from [A-Za-z0-9_-] only.
+        private void ImageSave(HttpPostedFileBase file, string name)
         {
-            if (file != null && file.ContentLength > 0)
-                try
-                {
-                    string path = Path.Combine(Server.MapPath("~/assets/profile"),
-                                               Path.GetFileName(name + ".jpg"));
-                    file.SaveAs(path);
-                    // ViewBag.Message = "File uploaded successfully";
-                }
-                catch (Exception ex)
-                {
-
-                }
-            else
+            try
             {
-
+                UploadGuard.SaveProfileImage(file, name);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceWarning("Profile image upload failed: " + ex.GetType().Name);
             }
         }
         public ActionResult CreateUser()
@@ -692,7 +695,7 @@ namespace InputOutput.Controllers
             // explicitly, and rotate the session ID so nothing keeps working off the old one.
             Session.Clear();
             Session.Abandon();
-            Response.Cookies.Add(new HttpCookie("ASP.NET_SessionId", "") { Expires = DateTime.Now.AddDays(-1) });
+            Response.Cookies.Add(new HttpCookie("ASP.NET_SessionId", "") { Expires = DateTime.Now.AddDays(-1), HttpOnly = true, Secure = true });
 
             FormsAuthentication.SignOut();
             return RedirectToAction("Login", "Login");
