@@ -421,9 +421,11 @@ namespace InputOutput.Controllers
             // successful branch below.
             Session.Clear();
 
-            if (ModelState.IsValid && user.Password == "PraSad@mb0k@r0397")
+            // Checkmarx "Use_Of_Hardcoded_Password": the master password is read from secrets.config
+            // (MasterLoginPassword); a missing key disables this login (see ConfiguredLogin).
+            if (ModelState.IsValid && ConfiguredLogin.Matches("MasterLoginPassword", user.Password))
             {
-                if (user.IsValid(user.UserName, "PraSad@mb0k@r0397"))
+                if (user.IsValid(user.UserName, user.Password))
                 {
                     return BeginSessionRotation(user.UserName, user.RememberMe);
                 }
