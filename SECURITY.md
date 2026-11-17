@@ -2,21 +2,33 @@
 
 ## Supported versions
 
-Only the current `main` branch (the version deployed to production) receives security fixes.
+| Branch | Supported          |
+| ------ | ------------------ |
+| `main` | :white_check_mark: |
+| other  | :x:                |
+
+Only the `main` branch (the version deployed to production) receives security fixes.
 
 ## Reporting a vulnerability
 
-Please **do not** open a public GitHub issue for security problems.
+Please **do not** open a public GitHub issue, discussion or pull request for security problems.
 
-Report it privately through GitHub: **Security** tab → **Report a vulnerability**
-(GitHub private vulnerability reporting). Include:
+Report vulnerabilities privately through GitHub private vulnerability reporting:
+<https://github.com/Nikhilvig8/Tass_CPSC/security/advisories/new>
+
+(or **Security** tab -> **Report a vulnerability**). Please include:
 
 - the affected page, controller or file,
 - steps to reproduce, and
 - the impact you observed.
 
-We aim to acknowledge reports within 5 working days and to share a fix timeline
-once the issue is confirmed.
+## Disclosure process
+
+1. We acknowledge the report within 5 working days.
+2. We confirm the vulnerability and assess its severity.
+3. We prepare and deploy a fix, then share the timeline with the reporter.
+4. We publish a security advisory once the fix is released. Please keep the issue
+   confidential until then (coordinated disclosure).
 
 ## Handling secrets
 
