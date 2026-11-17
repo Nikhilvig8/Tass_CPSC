@@ -680,6 +680,49 @@ namespace InputOutput.Controllers
                 System.Diagnostics.Trace.TraceWarning("Profile image upload failed: " + ex.GetType().Name);
             }
         }
+        // Admin screen to lift login lockouts (LoginThrottle) without recycling the app pool.
+        private bool IsLockoutAdmin()
+        {
+            string type = Session["Type"] as string;
+            return type == "SuperAdmin" || type == "Admin";
+        }
+
+        [HttpGet]
+        public ActionResult UnlockUser()
+        {
+            if (!IsLockoutAdmin()) return RedirectToAction("Login", "Login");
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UnlockUser(FormCollection collection)
+        {
+            if (!IsLockoutAdmin()) return RedirectToAction("Login", "Login");
+
+            if (collection.Get("action") == "all")
+            {
+                int removed = LoginThrottle.ClearAll();
+                ViewBag.Message = "All login lockouts cleared (" + removed + " active lock(s) removed).";
+            }
+            else
+            {
+                string username = (collection.Get("username") ?? string.Empty).Trim();
+                if (username.Length == 0)
+                {
+                    ViewBag.Message = "Please enter a username.";
+                }
+                else
+                {
+                    bool wasLocked = LoginThrottle.UnlockUser(username);
+                    ViewBag.Message = wasLocked
+                        ? "User '" + username + "' has been unlocked."
+                        : "User '" + username + "' was not locked; failed-attempt count reset.";
+                }
+            }
+            return View();
+        }
+
         public ActionResult CreateUser()
         {
             return View();
