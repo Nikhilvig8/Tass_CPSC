@@ -63,7 +63,7 @@
        browser cannot encrypt, the form is not submitted. See App_Code/LoginPasswordCipher.cs. *@
     <script type="text/javascript" nonce="@CspNonce.Current">
         (function () {
-            var pwJwk = { kty: "RSA", n: "@ViewBag.PwKeyN", e: "@ViewBag.PwKeyE", alg: "RSA-OAEP", ext: true };
+            var pwJwk = { kty: "RSA", n: "@ViewBag.RsaN", e: "@ViewBag.RsaE", alg: "RSA-OAEP", ext: true };
             var pwNonce = "@ViewBag.PwNonce";
 
             function bytesToB64(buffer) {
